@@ -1,0 +1,33 @@
+# Hush - neoforge.mods.toml. The placeholders below are filled in by the generateModMetadata task.
+
+license="${mod_license}"
+
+[[mods]]
+modId="${mod_id}"
+version="${mod_version}"
+displayName="${mod_name}"
+authors="Lythroo_"
+description='''
+Quiets harsh Minecraft sounds (like the enderman scream and the nether portal) and fades a sound out when its source dies or despawns.
+'''
+logoFile="assets/hush/icon.png"
+# Client-only mod: don't block connecting to servers that don't have it.
+displayTest="IGNORE_ALL_VERSION"
+
+# Declare our mixin config so FML loads it. The file lives at the JAR root.
+[[mixins]]
+config="${mod_id}.mixins.json"
+
+[[dependencies.${mod_id}]]
+    modId="neoforge"
+    type="required"
+    versionRange="[${neo_version},)"
+    ordering="NONE"
+    side="CLIENT"
+
+[[dependencies.${mod_id}]]
+    modId="minecraft"
+    type="required"
+    versionRange="${minecraft_version_range}"
+    ordering="NONE"
+    side="CLIENT"

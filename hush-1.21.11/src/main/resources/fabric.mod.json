@@ -1,0 +1,37 @@
+{
+	"schemaVersion": 1,
+	"id": "hush",
+	"version": "${version}",
+	"name": "Hush",
+	"description": "Quiets harsh Minecraft sounds (like the enderman scream and the nether portal) and fades a sound out when its source dies or despawns.",
+	"authors": [
+		"Lythroo_"
+	],
+	"contact": {},
+	"license": "LGPL-3.0-only",
+	"icon": "assets/hush/icon.png",
+	"environment": "client",
+	"entrypoints": {
+		"client": [
+			"lythro.hush.HushClient"
+		],
+		"modmenu": [
+			"lythro.hush.HushModMenu"
+		]
+	},
+	"mixins": [
+		{
+			"config": "hush.client.mixins.json",
+			"environment": "client"
+		}
+	],
+	"depends": {
+		"fabricloader": ">=0.19.3",
+		"minecraft": ">=1.21.11 <1.21.12",
+		"java": ">=21",
+		"fabric-api": "*"
+	},
+	"suggests": {
+		"modmenu": "*"
+	}
+}

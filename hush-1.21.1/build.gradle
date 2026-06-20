@@ -1,0 +1,105 @@
+plugins {
+	// 1.21.11 is the LAST obfuscated Minecraft version, so it needs Loom's "-remap" plugin variant
+	// (obfuscated → Mojang mappings). The plain "net.fabricmc.fabric-loom" id assumes an already
+	// unobfuscated game (26.x) and fails with "Cannot use Mojang mappings in a non-obfuscated
+	// environment". Both ids ship in the same Loom artifact (loom_version) since Loom 1.14.
+	id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
+	id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+repositories {
+	// Mod Menu (TerraformersMC) for the in-game config button.
+	maven { url = "https://maven.terraformersmc.com/releases" }
+	// JSpecify annotations (org.jspecify:jspecify) live on Maven Central.
+	mavenCentral()
+}
+
+loom {
+	splitEnvironmentSourceSets()
+
+	mods {
+		"hush" {
+			sourceSet sourceSets.main
+			sourceSet sourceSets.client
+		}
+	}
+
+}
+
+// Shared, loader-agnostic core. The neutral tier compiles on every target. 1.21.1 is immediate-mode
+// (pre-1.21.8), so it uses the gui-classic tier (3D PoseStack + classic mouse signatures) rather than
+// the retained-mode gui-legacy. Both are client-only code, so they join Fabric's split "client" set.
+sourceSets.client.java.srcDir("../hush-core/neutral")
+sourceSets.client.java.srcDir("../hush-core/gui-classic")
+
+dependencies {
+	// To change the versions see the gradle.properties file
+	minecraft "com.mojang:minecraft:${project.minecraft_version}"
+	mappings loom.officialMojangMappings()
+
+	// Mod dependencies use modImplementation so Loom remaps them from intermediary to the dev mappings;
+	// plain implementation would leave them unmapped (wrong/broken at compile + runtime).
+	modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+	// Fabric API. This is technically optional, but you probably want it anyway.
+	modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_api_version}"
+
+	// JSpecify @Nullable used throughout hush-core. Newer Minecraft (1.21.11+/26.x) bundles it on the
+	// classpath, but 1.21.1 does not, so add it explicitly. Compile-only: the annotations have no
+	// runtime effect and are never read reflectively. The shared core compiles in the client source set.
+	clientCompileOnly "org.jspecify:jspecify:1.0.0"
+
+	// Mod Menu — optional at runtime (only its entrypoint loads it); bundled in dev for testing.
+	modImplementation "com.terraformersmc:modmenu:${project.modmenu_version}"
+}
+
+processResources {
+	def version = project.version
+	inputs.property "version", version
+
+	filesMatching("fabric.mod.json") {
+		expand "version": version
+	}
+}
+
+tasks.withType(JavaCompile).configureEach {
+	it.options.release = 21
+}
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(21)
+	}
+	withSourcesJar()
+	sourceCompatibility = JavaVersion.VERSION_21
+	targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+	def projectName = project.name
+	inputs.property "projectName", projectName
+
+	from("LICENSE") {
+		rename { "${it}_$projectName"}
+	}
+}
+
+// configure the maven publication
+publishing {
+	publications {
+		create("mavenJava", MavenPublication) {
+			from components.java
+		}
+	}
+
+	// See https://docs.gradle.org/current/userguide/publishing_maven.html for information on how to set up publishing.
+	repositories {
+		// Add repositories to publish to here.
+		// Notice: This block does NOT have the same function as the block in the top level.
+		// The repositories here will be used for publishing your artifact, not for
+		// retrieving dependencies.
+	}
+}

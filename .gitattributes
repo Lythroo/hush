@@ -1,0 +1,14 @@
+# Normalise line endings: text files stored as LF, checked out native.
+* text=auto eol=lf
+
+# Scripts must keep their platform line endings.
+*.bat       text eol=crlf
+*.cmd       text eol=crlf
+gradlew     text eol=lf
+*.sh        text eol=lf
+
+# Binary assets — never normalise or diff.
+*.png       binary
+*.jar       binary
+*.zip       binary
+*.ogg       binary

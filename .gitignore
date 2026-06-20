@@ -1,0 +1,40 @@
+# Build output
+build/
+out/
+bin/
+classes/
+.gradle/
+
+# Built jars — attach these to GitHub Releases / upload to Modrinth instead of committing
+dist/
+
+# Dev run environments & generated data caches
+run/
+**/src/generated/**/.cache/
+repo/
+
+# IDE
+.idea/
+*.iml
+*.ipr
+*.iws
+.settings/
+.vscode/
+.classpath
+.project
+.apt_generated
+.factorypath
+*.launch
+
+# Claude Code / local tooling
+.claude/
+
+# OS
+*.DS_Store
+Thumbs.db
+
+# Java crash / debug
+hs_err_*.log
+replay_*.log
+*.hprof
+*.jfr
